@@ -1,0 +1,55 @@
+services:
+  
+  minio:
+    image: minio/minio
+    restart: unless-stopped
+    volumes:
+      - ./file-storage:/data
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    networks:
+      - screenshot-network
+    command: server --address ":9000" --console-address ":9001" /data
+
+  api:
+    container_name: api
+    build: ./api/config
+    env_file:
+      - ./api/config/.env
+    volumes:
+      - ./api:/api
+    ports:
+      - "8000:8000"
+    depends_on:
+      - selenium
+      - db
+      - minio
+    networks:
+      - screenshot-network
+  
+  selenium:
+    image: selenium/standalone-chrome
+    networks:
+      - screenshot-network
+  
+  
+  db:
+    image: postgres:13
+    restart: always
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    expose:
+      - 5432
+    environment:
+      POSTGRES_USER: screenshot
+      POSTGRES_PASSWORD: screenshot1
+      POSTGRES_DB: screenshot
+    networks:
+      - screenshot-network
+
+volumes:
+  postgres_data:
+
+networks:
+  screenshot-network:

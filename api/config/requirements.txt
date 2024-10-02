@@ -1,0 +1,6 @@
+fastapi==0.115.0
+minio==7.2.9
+selenium==4.25.0
+SQLAlchemy==2.0.35
+uvicorn[standart]==0.30.6
+psycopg2-binary == 2.9.9
